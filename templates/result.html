@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加详情</title>
+</head>
+<style>
+    div {
+      color: red;
+      font-size: 16px;
+    }
+    button {
+      display: block;
+      margin: 0 auto;
+      color: red;
+      width: 100px;
+      height: 50px;
+}
+  </style>
+<body>
+
+    {%if num.num > 0%}
+      <p>成功导入{{num.num}}条</p>
+    {%elif num.num == 0%}
+      <p>导入失败，失败原因：{{num.msg}}</p>
+    {%else%}
+      <p>出错了，接口返回有问题！</p>
+    {%endif%}
+
+    <button onclick="window.location.href='/zhigeng/'">返回首页</button>
+<!--    <p>成功导入{{num}}条</p>-->
+<!--    <p>导入失败原因：{{msg}}</p>-->
+     <table border="1">
+        <tr>
+            <td>平台</td>
+            <td>环境</td>
+            <td>token</td>
+    </tr>
+
+    <tr>
+        <td class="align-middle">{{ result.platform }}</td>
+        <td class="align-middle">{{ result.environment }}</td>
+        <td>{{ result.header }}</td>
+        <td>
+            <button >-</button>
+            {{ result.count }}
+            <button >+</button>
+        </td>
+    </tr>
+    </table>
+
+
+
+</body>
+</html>
