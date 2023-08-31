@@ -16,7 +16,7 @@ class Title_Entry():
         :param platform: 平台
         :param environment: 环境
         """
-
+        header=header.lstrip()
         self.attack_url = {
             "dev_url": "http://attack.dev.nosugar.io",  # 测试环境
             # "sim_url": "http://attack.sim.nosugar.tech",  # 线上测试
@@ -33,11 +33,11 @@ class Title_Entry():
 
             'res_id_list': ['id','hash_id'] ,# id 公共平台返回id
             'cc_id_list': ['id','question_id'] ,# id 公共平台传参id
+
             "Authorization": {"Authorization":header},        # 正式环境
             "Token": {"Token":header}# 正式环境
 
         }
-
         bool = xlrd.open_workbook(file)
         self.sheel = bool.sheet_by_index(0)
         self.h = self.sheel.nrows  # 获取行数
@@ -111,16 +111,20 @@ class Title_Entry():
         # print(list_datas)
         return list_datas
     def requests_data(self,data,list_data,url,new,header):
+        # msg=''
         try:
-            print(data)
             res = self.session.post(url=url+new, data=data, headers=header).json()
 
             if res['code'] == 200:
+                msg='添加完成'
                 print(f"{list_data}添加完成")
             else:
+                msg = f'添加失败{res}'
                 print(f"{list_data}添加失败",res)
         except EnvironmentError as  e :
             print(f"{list_data} 导入失败,失败原因：{e}")
+            msg=e
+        return  msg
     def add(self):
         sui_data = self.sui()
         url = sui_data[0]
@@ -133,26 +137,30 @@ class Title_Entry():
             self.res_msg=""
             # print(list_data)
             data['title'] = list_data[0]
-            # data['question'] = "&lt;script&gt;&lt;/script&gt;"+list_data[1]  # 题目
+            # uploads['question'] = "&lt;script&gt;&lt;/script&gt;"+list_data[1]  # 题目
             data['question'] = list_data[1]  # 题目
             data['tag'] = list_data[2]  # 内部标记
             if self.platform=='put':
-                # data['question_type'] = list_data[3]  # question_type  qtype题目类型  essay   问答    radio  选择  file  文件  combo连协题
-                # data['answer_type'] = list_data[4]  # answer_type  atype答案类型  dynamic  动态  raw 固定   human  人工判断
+                # uploads['question_type'] = list_data[3]  # question_type  qtype题目类型  essay   问答    radio  选择  file  文件  combo连协题
+                # uploads['answer_type'] = list_data[4]  # answer_type  atype答案类型  dynamic  动态  raw 固定   human  人工判断
                 question_type='question_type'
                 answer_type='answer_type'
             else:
-                # data['qtype'] = list_data[3]  # question_type  qtype题目类型  essay   问答    radio  选择  file  文件  combo连协题
-                # data['atype'] = list_data[4]  # answer_type  atype答案类型  dynamic  动态  raw 固定   human  人工判断
+                # uploads['qtype'] = list_data[3]  # question_type  qtype题目类型  essay   问答    radio  选择  file  文件  combo连协题
+                # uploads['atype'] = list_data[4]  # answer_type  atype答案类型  dynamic  动态  raw 固定   human  人工判断
                 question_type = 'qtype'
                 answer_type = 'atype'
             data[question_type] = list_data[3]  # question_type  qtype题目类型  essay   问答    radio  选择  file  文件  combo连协题
             data[answer_type] = list_data[4]  # answer_type  atype答案类型  dynamic  动态  raw 固定   human  人工判断
             data['options'] = list_data[5]  # 选项
             data['answer'] = list_data[6]  # 答案
-            # data['env_id'] = list_data[7]  # 镜像
-            # data['params'] = list_data[8]  # 镜像参数#镜像id
-            data['difficulty'] = list_data[7] # 难度
+            # uploads['env_id'] = list_data[7]  # 镜像
+            # uploads['params'] = list_data[8]  # 镜像参数#镜像id
+
+            if  list_data[7]=="":
+                data['difficulty'] = 1 # 难度
+            else:
+                data['difficulty'] = list_data[7]  # 难度
             if  list_data[8]=="":
                 data['points']=1
             else:
@@ -170,7 +178,7 @@ class Title_Entry():
                 data['allow_skip'] = 1
             else:
                 print('allow_skip传参错误')
-            # data['allow_skip']=list_data[14]   #允许跳过  0默认不允许  1允许
+            # uploads['allow_skip']=list_data[14]   #允许跳过  0默认不允许  1允许
 
             data['apps']=app#权限
             if data[question_type] =="单选题":
@@ -235,6 +243,7 @@ class Title_Entry():
             print(f"已添加{i}条")
             i+=1
         res={"num":i-1,"msg":self.res_msg}
+
         return res
     def dele(self,title=None):
         sui_data= self.sui()
@@ -260,7 +269,7 @@ class Title_Entry():
         for i in range(1, page + 1):
             res1 = self.session.post(url=url +  list, data=data,
                                     headers=header).json()
-            datas = res1["data"]
+            datas = res1["uploads"]
             for dat in datas:
                 question_id = dat[res_id]
                 res = self.session.post(url=url + de, data={cc_id: question_id},

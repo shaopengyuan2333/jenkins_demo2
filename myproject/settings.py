@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
-
+import os
 from pathlib import Path
 # import os
 # import django
@@ -141,8 +141,11 @@ ALLOWED_HOSTS = ['192.168.88.70','127.0.0.1']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
-
+MEDIA_ROOT  = os.path.join(BASE_DIR, 'zhigeng/uploads')
+STATICFILES_DIRS = [
+    # 其他静态文件路径...
+    MEDIA_ROOT,
+]
 ZHIGENG = {
     'DEFAULT_PERMISSION_CLASSES':[
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
