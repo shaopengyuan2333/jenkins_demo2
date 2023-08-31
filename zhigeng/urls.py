@@ -24,5 +24,7 @@ from rest_framework import routers
 urlpatterns = [
     # path('',views.home, name='home'),
     # path('list/', views.Upload_list_, name='Upload_list_'),
-    path('list', views.list),
+    path('add', views.add),
+    path('upload_file', views.upload_file),
+    path('update_topic_limits', views.update_topic_limits),
 ]
